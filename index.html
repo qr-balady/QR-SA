@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>مولد QR مخصص - balady-gov-sa</title>
+</head>
+<body>
+  <h2>توليد رمز QR يظهر balady-gov-sa/الاسم</h2>
+  <label>الرابط الحقيقي:</label><br>
+  <input type="text" id="realUrl" placeholder="https://example.com"><br><br>
+  <label>الاسم المستعار (مثلاً: gov1):</label><br>
+  <input type="text" id="alias" placeholder="مثال: gov1"><br><br>
+  <button onclick="generate()">توليد QR</button>
+
+  <div id="result" style="margin-top:20px;"></div>
+
+  <script>
+    function generate() {
+      const realUrl = document.getElementById("realUrl").value;
+      const alias = document.getElementById("alias").value;
+      if (!realUrl || !alias) {
+        alert("يرجى إدخال الرابط والاسم المستعار");
+        return;
+      }
+
+      // إنشاء ملف HTML تلقائي (تعليمي فقط – لا يعمل فعليًا بدون backend)
+      const qrLink = location.href.replace("index.html", "") + alias + ".html";
+      const qrImage = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(qrLink) + "&size=200x200&margin=20";
+
+      const redirectHtml = `
+        <!DOCTYPE html>
+        <html lang="ar">
+        <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="refresh" content="0; url=${realUrl}">
+          <title>balady-gov-sa \ ${alias}</title>
+        </head>
+        <body>
+          <h2>balady-gov-sa / ${alias}</h2>
+          <p>جاري تحويلك...</p>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob([redirectHtml], {type: "text/html"});
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = alias + ".html";
+      downloadLink.click();
+
+      document.getElementById("result").innerHTML = `
+        <p><strong>رابط QR:</strong> <a href="${qrLink}" target="_blank">${qrLink}</a></p>
+        <img src="${qrImage}" style="border: 10px solid white"><br><br>
+        <a href="${qrImage}" download="qr-${alias}.png"><button>تحميل رمز QR كـ PNG</button></a><br><br>
+        <small>تم أيضًا تحميل ملف التحويل HTML، ارفعه في مستودعك.</small>
+      `;
+    }
+  </script>
+</body>
+</html>
