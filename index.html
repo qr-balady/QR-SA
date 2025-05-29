@@ -42,7 +42,7 @@
     <button id="downloadBtn">⬇️ تحميل الباركود PNG</button>
 
     <h4>انسخ الملف التالي وأرفعه في المستودع:</h4>
-    <textarea id="htmlFile" rows="10" cols="50"></textarea>
+    <textarea id="htmlFile" rows="10" cols="50" readonly></textarea>
   </div>
 
   <script>
@@ -63,9 +63,14 @@
       document.getElementById('output').style.display = 'block';
 
       // إنشاء الباركود
-      QRCode.toCanvas(document.getElementById('qrcode'), fakeDomain, { width: 200 });
+      const qrContainer = document.getElementById('qrcode');
+      qrContainer.innerHTML = ""; // تفريغ أي باركود سابق
+      QRCode.toCanvas(document.createElement('canvas'), fakeDomain, { width: 200 }, (err, canvas) => {
+        if (err) return alert('حدث خطأ في توليد الباركود');
+        qrContainer.appendChild(canvas);
+      });
 
-      // إنشاء صفحة HTML جاهزة
+      // توليد ملف HTML يعيد التوجيه
       const htmlContent = `<!DOCTYPE html>
 <html>
   <head>
